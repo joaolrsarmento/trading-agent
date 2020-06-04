@@ -10,4 +10,4 @@ class Options(Enum):
     """
     DO_NOTHING = 0
     BUY = 1
-    SELL = 2
+    SELL = -1

@@ -1,4 +1,4 @@
 from agent.indicators.AbstractAgentIndicator import AbstractAgentIndicator
 
-class SimpleMovingAverageCrossoverIndicator(AbstractAgentIndicator):
+class SimpleMovingAverageCrossover(AbstractAgentIndicator):
     pass
