@@ -1,35 +1,44 @@
-from pandas_datareader import data as pdr
-from datetime import date
 import yfinance as yf
 import numpy as np
+from pandas_datareader import data as pdr
+from datetime import date
+from tools.AbstractTool import AbstractTool
 
-yf.pdr_override()
-
-
-class BacktestTool(object):
+class BacktestTool(AbstractTool):
     """
     This class represents a tool for backtesting purposes.
 
     """
+    yf.pdr_override()
 
-    def __init__(self, symbols):
+    def __init__(self, symbols, initial_date, final_date):
         """
         Class constructor.
 
-        @param symbols: symbols that shall be used to backtest
+        @param symbols: symbols that should be used while backtesting
         @@type symbols: list of strings
-        """
-        self.symbols = symbols
-        self.data = None
-
-    def get_data(self, initial_date=None, final_date=None):
-        """
-        Method to get data online using yahoo finance api.
-
         @param initial_date: initial date to get data
         @@type initial_date: datetime string in the format "%YYYY-%MM-%DD"
         @param final_date: final date to get data
         @@type final_date: datetime string in the format "%YYYY-%MM-%DD"
+        """
+        self.symbols = symbols
+        self.data = None
+        self.initial_date = initial_date
+        self.final_date = final_date
+
+    def execute(self, agent):
+        """
+        Runs the backtest tool.
+
+        @param agent: the agent the method should be executed on.
+        @@type agent: class Agent
+        """
+        data = self._get_data()
+        
+    def _get_data(self):
+        """
+        Method to get data online using yahoo finance api.
 
         @return data: data achieved online
         @@@type data: list of dataframes
@@ -40,7 +49,7 @@ class BacktestTool(object):
             for symbol in self.symbols:
                 # Get stock data from yahoo
                 stock_data = pdr.get_data_yahoo(
-                    symbol, start=initial_date, end=final_date)
+                    symbol, start=self.initial_date, end=self.final_date)
 
                 # Save it
                 np.append(self.data, stock_data)

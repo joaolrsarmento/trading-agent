@@ -1,2 +1,4 @@
-class PredictionEngine(object):
+from tools.AbstractTool import AbstractTool
+
+class PredictionEngine(AbstractTool):
     pass
