@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from tools.BacktestTool import BacktestTool
-from models.options import Options
+from models.Options import Options
 
 
 class AbstractModel(object):

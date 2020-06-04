@@ -1,4 +1,4 @@
-from logs.log import Log
+from log.Logger import Logger
 
 class AbstractTool(object):
     """
@@ -15,7 +15,7 @@ class AbstractTool(object):
         @@type path_for_log_file: string
         """
         self.tool_name = tool_name
-        self.log = Log(tool_name, path_for_log_file)
+        self.log = Logger(tool_name, path_for_log_file)
 
     def execute(self, agent):
         """
