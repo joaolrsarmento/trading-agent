@@ -1,5 +1,5 @@
 from models.AbstractModel import AbstractModel
 
-class AbstractAgentIndicator(AbstractModel):
+class AbstractModelIndicator(AbstractModel):
     pass
 

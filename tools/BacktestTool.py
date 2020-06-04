@@ -22,6 +22,8 @@ class BacktestTool(AbstractTool):
         @param final_date: final date to get data
         @@type final_date: datetime string in the format "%YYYY-%MM-%DD"
         """
+        super.__init__(tool_name="Backtest")
+        
         self.symbols = symbols
         self.data = None
         self.initial_date = initial_date

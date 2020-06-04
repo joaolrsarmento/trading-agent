@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-from tools.BacktestTool import BacktestTool
 from models.Options import Options
 
 
@@ -14,6 +13,8 @@ class AbstractModel(object):
         """
         Agent constructor.
 
+        @param model_name: model name
+        @@type model_name: string
         """
         self.model_name = model_name
 
@@ -21,7 +22,9 @@ class AbstractModel(object):
     def run_tool(self, tool):
         """
         Method to run backtest on specific symbols using the same model.
-
+        
+        @param tool: tool to be executed
+        @@type tool: a class derived from tools.AbstractTool class
         """
         tool.execute()
         
