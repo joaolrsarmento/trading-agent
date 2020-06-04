@@ -16,9 +16,9 @@ class AbstractModel(object):
         @param model_name: model name
         @@type model_name: string
         """
-        self.model_name = model_name
+        self._model_name = model_name
         self.signals = None
-
+    
     def run_tool(self, tool):
         """
         Method to run backtest on specific symbols using the same model.
@@ -35,3 +35,9 @@ class AbstractModel(object):
         """
         raise NotImplementedError("This class is abstract and should not have this method.")
 
+    def get_name(self):
+        """
+        Get model name.
+        
+        """
+        return self._model_name

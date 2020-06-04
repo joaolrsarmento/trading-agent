@@ -3,6 +3,7 @@ import numpy as np
 from pandas_datareader import data as pdr
 from datetime import date
 from tools.AbstractTool import AbstractTool
+from tqdm import tqdm
 
 class BacktestTool(AbstractTool):
     """
@@ -11,7 +12,7 @@ class BacktestTool(AbstractTool):
     """
     yf.pdr_override()
 
-    def __init__(self, symbols, initial_date, final_date):
+    def __init__(self, symbol='AAPL', initial_date="2010-01-01", final_date="2020-01-01"):
         """
         Class constructor.
 
@@ -22,14 +23,14 @@ class BacktestTool(AbstractTool):
         @param final_date: final date to get data
         @@type final_date: datetime string in the format "%YYYY-%MM-%DD"
         """
-        super.__init__(tool_name="Backtest")
-        
-        self.symbols = symbols
+        super().__init__(tool_name="Backtest")
+
+        self.symbol = symbol
         self.data = None
         self.initial_date = initial_date
         self.final_date = final_date
 
-    def execute_agent_tool(self, agent):
+    def execute_agent(self, agent):
         """
         Runs the backtest tool.
 
@@ -37,33 +38,29 @@ class BacktestTool(AbstractTool):
         @@type agent: class Agent
         """
         data = self._get_data()
-    
-    def execute_model_tool(self, model):
+
+    def execute_model(self, model):
         """
         Runs the backtest tool.
 
         @param model: the model the method should be executed on.
         @@type agent: class derived from models.AbstractModel class
         """
-        data = self._get_data()
+        print(f'Running backtest on model {model.get_name()}...')
+        data = self.get_data()
+        model.plot()
 
-    def _get_data(self):
+    def get_data(self):
         """
         Method to get data online using yahoo finance api.
 
         @return data: data achieved online
         @@@type data: list of dataframes
         """
-        if initial_date and final_date:
-            # Initialize empty data
-            self.data = np.array([])
-            for symbol in self.symbols:
-                # Get stock data from yahoo
-                stock_data = pdr.get_data_yahoo(
-                    symbol, start=self.initial_date, end=self.final_date)
-
-                # Save it
-                np.append(self.data, stock_data)
+        if self.initial_date and self.final_date:
+            # Get stock data from yahoo
+            self.data = pdr.get_data_yahoo(
+                self.symbol, start=self.initial_date, end=self.final_date)
 
             return self.data
 

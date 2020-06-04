@@ -3,4 +3,6 @@ class Logger(object):
     This class represents a log file.
 
     """
-    pass
+
+    def __init__(self, tool_name=None, path_for_log_file="tmp/"):
+        pass
