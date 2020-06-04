@@ -1,2 +1,0 @@
-class BacktestEngine(object):
-    pass
