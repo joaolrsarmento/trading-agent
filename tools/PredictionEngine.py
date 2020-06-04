@@ -1,1 +1,2 @@
-print('Prediction')
+class PredictionEngine(object):
+    pass
