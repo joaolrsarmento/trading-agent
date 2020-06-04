@@ -29,7 +29,7 @@ class BacktestTool(AbstractTool):
         self.initial_date = initial_date
         self.final_date = final_date
 
-    def execute(self, agent):
+    def execute_agent_tool(self, agent):
         """
         Runs the backtest tool.
 
@@ -37,7 +37,16 @@ class BacktestTool(AbstractTool):
         @@type agent: class Agent
         """
         data = self._get_data()
-        
+    
+    def execute_model_tool(self, model):
+        """
+        Runs the backtest tool.
+
+        @param model: the model the method should be executed on.
+        @@type agent: class derived from models.AbstractModel class
+        """
+        data = self._get_data()
+
     def _get_data(self):
         """
         Method to get data online using yahoo finance api.

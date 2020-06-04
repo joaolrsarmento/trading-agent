@@ -9,7 +9,7 @@ class AbstractModel(object):
 
     """
 
-    def __init__(self, model_name="Random Model"):
+    def __init__(self, model_name="Abstract Model"):
         """
         Agent constructor.
 
@@ -17,7 +17,7 @@ class AbstractModel(object):
         @@type model_name: string
         """
         self.model_name = model_name
-
+        self.signals = None
 
     def run_tool(self, tool):
         """
@@ -26,14 +26,12 @@ class AbstractModel(object):
         @param tool: tool to be executed
         @@type tool: a class derived from tools.AbstractTool class
         """
-        tool.execute()
+        tool.execute_model(self)
         
-    def get_signals(self, data = None):
+    def get_signals(self):
         """
         Method to get signals from a model.
 
-        @param data: empty
-        @@type data: None
         """
         raise NotImplementedError("This class is abstract and should not have this method.")
 

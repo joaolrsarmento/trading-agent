@@ -17,13 +17,20 @@ class AbstractTool(object):
         self.tool_name = tool_name
         self.log = Logger(tool_name, path_for_log_file)
 
-    def execute(self, agent):
+    def execute_agent_tool(self, agent):
         """
-        Executes the main method of the tool.
+        Executes the main method of the tool on a agent.
 
         @param agent: the agent the method should be executed on.
         @@type agent: class Agent
         """
         raise NotImplementedError("This method is abstract and must be implemented in derived classes.")
 
-    
+    def execute_model_tool(self, model):
+        """
+        Executes the main method of the tool on a single model.
+
+        @param model: the model the method should be executed on.
+        @@type model: class derived from tools.AbstractModel class
+        """
+        raise NotImplementedError("This method is abstract and must be implemented in derived classes.")
