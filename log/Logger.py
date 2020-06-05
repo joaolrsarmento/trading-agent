@@ -19,7 +19,7 @@ class Logger(object):
         """
         if not os.path.isdir(path_for_log_file):
             os.mkdir(path_for_log_file)
-        self.path = path_for_log_file if path_for_log_file[-1] == '/' else path_for_log_file + '/'
+        self.path = path_for_log_file
         self._data = None
         self.date = datetime.datetime.now()
 
