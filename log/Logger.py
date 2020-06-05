@@ -1,6 +1,6 @@
 import json
 import datetime
-
+import os
 
 class Logger(object):
     """
@@ -17,6 +17,8 @@ class Logger(object):
         @param parameters: parameters the tool wanna save
         @@type parameters: None
         """
+        if not os.path.isdir(path_for_log_file):
+            os.mkdir(path_for_log_file)
         self.path = path_for_log_file if path_for_log_file[-1] == '/' else path_for_log_file + '/'
         self._data = None
         self.date = datetime.datetime.now()
