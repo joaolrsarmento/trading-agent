@@ -7,7 +7,7 @@ class AbstractTool(object):
 
     """
 
-    def __init__(self, tool_name=None, path_for_log_file='tmp/'):
+    def __init__(self, tool_name=None, path_for_log_file='tmp/', parameters=None):
         """
         Class constructor
 
