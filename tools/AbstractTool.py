@@ -38,3 +38,7 @@ class AbstractTool(object):
         """
         raise NotImplementedError(
             "This method is abstract and must be implemented in derived classes.")
+
+    def _create_log(self, data):
+        print('Saving log...')
+        self.log.log(data)

@@ -52,7 +52,7 @@ class BacktestTool(AbstractTool):
         """
         data = self._get_data()
 
-    def execute_model(self, model, save_log=True, plot_signals=False):
+    def execute_model(self, model, save_log=True, plot_signals=False, plot_backtest_data=True):
         """
         Runs the backtest tool.
 
@@ -64,43 +64,16 @@ class BacktestTool(AbstractTool):
         data = self.get_data()
         model.update(data)
         signals = model.get_signals()
+        generated_data = self._generate_backtest_data(signals)
 
-        generated_data = pd.DataFrame(index=signals.index)
-        generated_data['Balance'] = (
-            (1 + signals['Signal'] * signals['Change'].shift(1)).cumprod()) * self.initial_balance
-        generated_data['Profit'] = (
-            generated_data['Balance'] - self.initial_balance)
-        generated_data['Profit %'] = (
-            generated_data['Balance'] / self.initial_balance - 1) * 100
-        generated_data['Options'] = signals['Signal']
-        generated_data.fillna(0)
-
-
-        plt.plot(generated_data.index, generated_data['Profit %'])
-        plt.ylabel('% Profit')
-        plt.xlabel('Date')
-        plt.show()
-
-        generated_data.index = generated_data.index.strftime("%Y-%m-%d")
-
-        data = {}
-        data['Model used'] = model.get_name()
-        data['Initial date'] = self.initial_date
-        data['Final date'] = self.final_date
-        data['Initial balance (R$)'] = self.initial_balance 
-        data['Final balance (R$)'] = generated_data['Balance'][-1]
-        data['Final profit (R$)'] = generated_data['Profit'][-1]
-        data['Final profit (%)'] = generated_data['Profit %'][-1]
-        data['Total buy operations'] = int((generated_data['Options'] == Options.BUY).sum())
-        data['Total sell operations'] = int((generated_data['Options'] == Options.SELL).sum())
-        data['Total operations'] = data['Total buy operations'] + data['Total sell operations']
-        data['History'] = generated_data.to_dict(orient='index')
-        
+        if plot_backtest_data:
+            print('Plotting backtest data...')
+            self._plot_backtest_data(model, generated_data)
         if plot_signals:
             model.plot()
-
         if save_log:
             print('Saving log...')
+            data = self._create_backtest_log_data(model, generated_data)
             self.log.log(data)
 
     def get_data(self):
@@ -123,3 +96,37 @@ class BacktestTool(AbstractTool):
         else:
             raise ValueError("Final date can't be an empty value.")
     
+    def _create_backtest_log_data(self, model, generated_data):
+        data = {}
+        data['Model used'] = model.get_name()
+        data['Initial date'] = self.initial_date
+        data['Final date'] = self.final_date
+        data['Initial balance (R$)'] = self.initial_balance 
+        data['Final balance (R$)'] = generated_data['Balance'][-1]
+        data['Final profit (R$)'] = generated_data['Profit'][-1]
+        data['Final profit (%)'] = generated_data['Profit %'][-1]
+        data['Total buy operations'] = int((generated_data['Options'] == 1.0).sum())
+        data['Total sell operations'] = int((generated_data['Options'] == -1.0).sum())
+        data['Total operations'] = data['Total buy operations'] + data['Total sell operations']
+        data['History'] = generated_data.to_dict(orient='index')
+
+        return data
+    def _plot_backtest_data(self, model, generated_data):
+        plt.plot(generated_data.index, generated_data['Profit %'])
+        plt.ylabel('% Profit')
+        plt.xlabel('Date')
+        plt.show()
+
+    def _generate_backtest_data(self, signals):
+        generated_data = pd.DataFrame(index=signals.index)
+        generated_data['Balance'] = (
+            (1 + signals['Signal'] * signals['Change'].shift(1)).cumprod()) * self.initial_balance
+        generated_data['Profit'] = (
+            generated_data['Balance'] - self.initial_balance)
+        generated_data['Profit %'] = (
+            generated_data['Balance'] / self.initial_balance - 1) * 100
+        generated_data['Options'] = signals['Signal']
+        generated_data.fillna(0)
+        generated_data.index = generated_data.index.strftime("%Y-%m-%d")
+
+        return generated_data

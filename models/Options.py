@@ -8,6 +8,6 @@ class Options(Enum):
     - Sell a share
     
     """
-    DO_NOTHING = 0
-    BUY = 1
-    SELL = -1
+    DO_NOTHING = 0.0
+    BUY = 1.0
+    SELL = -1.0
