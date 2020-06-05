@@ -48,5 +48,5 @@ class Logger(object):
 
         """
         print('Saving log...')
-        with open(f"{self.path}log_{self.date}.json", 'w') as f:
+        with open(f"{self.path}log_{'__'.join(str(self.date).split(' '))}.json", 'w') as f:
             json.dump(self._data, f)
