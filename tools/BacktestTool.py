@@ -14,7 +14,7 @@ class BacktestTool(AbstractTool):
     """
     yf.pdr_override()
 
-    def __init__(self, initial_balance=1000.0, symbol='AAPL', initial_date="2010-01-01", final_date="2020-01-01"):
+    def __init__(self, initial_balance=1000.0, symbol='AAPL', initial_date="2020-01-01", final_date="2020-06-01"):
         """
         Class constructor.
 
@@ -65,7 +65,7 @@ class BacktestTool(AbstractTool):
         signals = model.get_signals()
 
         generated_data = pd.DataFrame(index=signals.index)
-        generated_data['Balance'] = ((1 + signals['Signal'] * signals['Change']).cumprod()) * self.initial_balance
+        generated_data['Balance'] = ((1 + signals['Signal'].shift(1) * signals['Change']).cumprod()) * self.initial_balance
         generated_data['Profit'] = (generated_data['Balance'] - self.initial_balance)
         generated_data['Profit %'] = (generated_data['Balance'] / self.initial_balance - 1) * 100
         generated_data['Options'] = signals['Signal']
