@@ -8,10 +8,10 @@ class Logger(object):
 
     """
 
-    def __init__(self, tool_name=None, path_for_log_file="tmp/", parameters=None):
+    def __init__(self, tool_name=None, path_for_log_file="tmp", parameters=None):
         """
         Class constructor.
-        
+
         @param tool_name: name of the tool that generated this log
         @@type tool_name: string
         @param path_for_log_file: path to save the log
@@ -19,9 +19,9 @@ class Logger(object):
         @param parameters: parameters the tool wanna save
         @@type parameters: None
         """
-        if not os.path.isdir(path_for_log_file):
-            os.mkdir(path_for_log_file)
-        self.path = path_for_log_file
+        self.path = os.path.join(path_for_log_file, "")
+        if not os.path.isdir(self.path):
+            os.mkdir(self.path)
         self._data = None
         self.date = datetime.datetime.now()
 
