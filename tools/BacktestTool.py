@@ -69,14 +69,16 @@ class BacktestTool(AbstractTool):
         generated_data['Profit'] = (generated_data['Balance'] - self.initial_balance)
         generated_data['Profit %'] = (generated_data['Balance'] / self.initial_balance - 1) * 100
         generated_data['Options'] = signals['Signal']
+        generated_data.fillna(0)
 
         plt.plot(generated_data.index, generated_data['Profit %'])
         plt.ylabel('% Profit')
         plt.xlabel('Date')
         plt.show()
 
+        generated_data.index = generated_data.index.strftime("%Y-%m-%d")
         print('Saving log...')
-        self.log.log(generated_data.to_json())
+        self.log.log(generated_data.to_dict(orient='index'))
 
     def get_data(self):
         """
