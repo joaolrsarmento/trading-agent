@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from pandas_datareader import data as pdr
 from matplotlib import pyplot as plt
+import matplotlib.dates as mdates
 from datetime import date
 from tools.AbstractTool import AbstractTool
 from models.Options import Options
@@ -71,7 +72,6 @@ class BacktestTool(AbstractTool):
 
         # Plot the data generated (only percentage profit is now been plotted)        
         if plot_backtest_data:
-            print('Plotting backtest data...')
             self._plot_backtest_data(model, generated_data)
 
         # Plot model signals
@@ -80,7 +80,6 @@ class BacktestTool(AbstractTool):
 
         # Save log file
         if save_log:
-            print('Saving log...')
             data = self._create_backtest_log_data_for_model(model, generated_data)
             self.log.log(data)
 
@@ -144,8 +143,13 @@ class BacktestTool(AbstractTool):
         @param generated_data: the data that was generated using this tool
         @@type generated_data: pandas DataFrame
         """
-        plt.plot(generated_data.index, generated_data['Profit %'])
-        plt.ylabel('% Profit')
+        print('Plotting backtest data...')
+
+        fig, ax = plt.subplots()
+
+        ax.plot(generated_data.index, generated_data['Profit %'])
+
+        plt.ylabel('Profit (%)')
         plt.xlabel('Date')
         plt.show()
 
