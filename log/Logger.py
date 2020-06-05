@@ -10,6 +10,8 @@ class Logger(object):
 
     def __init__(self, tool_name=None, path_for_log_file="tmp/", parameters=None):
         """
+        Class constructor.
+        
         @param tool_name: name of the tool that generated this log
         @@type tool_name: string
         @param path_for_log_file: path to save the log
