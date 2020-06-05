@@ -33,6 +33,7 @@ class SimpleMovingAverageCrossover(AbstractModelIndicator):
         @@type data: pandas dataframe
         """
         signals = pd.DataFrame(index=data.index)
+        signals['Close'] = data['Close']
         signals['Fast SMA'] = data['Close'].rolling(
             window=self.fast_factor).mean()
         signals['Slow SMA'] = data['Close'].rolling(
@@ -43,6 +44,7 @@ class SimpleMovingAverageCrossover(AbstractModelIndicator):
         signals['Change'] = data['Close'].pct_change()
 
         self.signals = signals
+
 
     def get_signals(self):
         """

@@ -18,19 +18,15 @@ class Logger(object):
         @@type parameters: None
         """
         self.path = path_for_log_file if path_for_log_file[-1] == '/' else path_for_log_file + '/'
-        self._data = {
-            "Tool name": tool_name,
-            "Tool parameters": parameters,
-            "Date": str(datetime.datetime.now()),
-            "Data": {},
-        }
+        self._data = None
+        self.date = datetime.datetime.now()
 
     def log(self, data):
         """
         Log the data.
         
         """
-        self._data['Data'] = data
+        self._data = data
         self._save()
 
     def get_data(self):
@@ -47,5 +43,5 @@ class Logger(object):
         Save the data stored.
 
         """
-        with open(f"{self.path}log_{self._data['Date']}.json", 'w') as f:
+        with open(f"{self.path}log_{self.date}.json", 'w') as f:
             json.dump(self._data, f)

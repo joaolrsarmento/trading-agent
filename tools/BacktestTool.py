@@ -5,7 +5,8 @@ from pandas_datareader import data as pdr
 from matplotlib import pyplot as plt
 from datetime import date
 from tools.AbstractTool import AbstractTool
-from tqdm import tqdm
+from models.Options import Options
+
 
 class BacktestTool(AbstractTool):
     """
@@ -14,7 +15,7 @@ class BacktestTool(AbstractTool):
     """
     yf.pdr_override()
 
-    def __init__(self, initial_balance=1000.0, symbol='AAPL', initial_date="2020-01-01", final_date="2020-06-01"):
+    def __init__(self, initial_balance=1000.0, symbol='AAPL', initial_date="2019-01-01", final_date="2020-01-01"):
         """
         Class constructor.
 
@@ -51,7 +52,7 @@ class BacktestTool(AbstractTool):
         """
         data = self._get_data()
 
-    def execute_model(self, model):
+    def execute_model(self, model, save_log=True, plot_signals=False):
         """
         Runs the backtest tool.
 
@@ -65,11 +66,15 @@ class BacktestTool(AbstractTool):
         signals = model.get_signals()
 
         generated_data = pd.DataFrame(index=signals.index)
-        generated_data['Balance'] = ((1 + signals['Signal'].shift(1) * signals['Change']).cumprod()) * self.initial_balance
-        generated_data['Profit'] = (generated_data['Balance'] - self.initial_balance)
-        generated_data['Profit %'] = (generated_data['Balance'] / self.initial_balance - 1) * 100
+        generated_data['Balance'] = (
+            (1 + signals['Signal'] * signals['Change'].shift(1)).cumprod()) * self.initial_balance
+        generated_data['Profit'] = (
+            generated_data['Balance'] - self.initial_balance)
+        generated_data['Profit %'] = (
+            generated_data['Balance'] / self.initial_balance - 1) * 100
         generated_data['Options'] = signals['Signal']
         generated_data.fillna(0)
+
 
         plt.plot(generated_data.index, generated_data['Profit %'])
         plt.ylabel('% Profit')
@@ -77,8 +82,26 @@ class BacktestTool(AbstractTool):
         plt.show()
 
         generated_data.index = generated_data.index.strftime("%Y-%m-%d")
-        print('Saving log...')
-        self.log.log(generated_data.to_dict(orient='index'))
+
+        data = {}
+        data['Model used'] = model.get_name()
+        data['Initial date'] = self.initial_date
+        data['Final date'] = self.final_date
+        data['Initial balance (R$)'] = self.initial_balance 
+        data['Final balance (R$)'] = generated_data['Balance'][-1]
+        data['Final profit (R$)'] = generated_data['Profit'][-1]
+        data['Final profit (%)'] = generated_data['Profit %'][-1]
+        data['Total buy operations'] = int((generated_data['Options'] == Options.BUY).sum())
+        data['Total sell operations'] = int((generated_data['Options'] == Options.SELL).sum())
+        data['Total operations'] = data['Total buy operations'] + data['Total sell operations']
+        data['History'] = generated_data.to_dict(orient='index')
+        
+        if plot_signals:
+            model.plot()
+
+        if save_log:
+            print('Saving log...')
+            self.log.log(data)
 
     def get_data(self):
         """
@@ -99,3 +122,4 @@ class BacktestTool(AbstractTool):
 
         else:
             raise ValueError("Final date can't be an empty value.")
+    

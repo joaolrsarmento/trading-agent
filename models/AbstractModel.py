@@ -19,14 +19,14 @@ class AbstractModel(object):
         self._model_name = model_name
         self.signals = None
     
-    def run_tool(self, tool):
+    def run_tool(self, tool, save_log=True, plot_signals=False):
         """
         Method to run backtest on specific symbols using the same model.
         
         @param tool: tool to be executed
         @@type tool: a class derived from tools.AbstractTool class
         """
-        tool.execute_model(self)
+        tool.execute_model(self, save_log, plot_signals)
         
     def get_signals(self):
         """
