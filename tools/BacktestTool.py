@@ -33,6 +33,10 @@ class BacktestTool(AbstractTool):
         @@type initial_date: datetime string in the format "%YYYY-%MM-%DD"
         @param final_date: final date to get data
         @@type final_date: datetime string in the format "%YYYY-%MM-%DD"
+        @param take_profit: take profit constant (where stop the operation for profit)
+        @@type take_profit: float
+        @param stop_loss: stop loss constant (where stop the operation for loss)
+        @@type stop_loss
         """
         parameters = {
             "Initial balance": initial_balance,
