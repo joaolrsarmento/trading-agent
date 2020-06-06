@@ -42,6 +42,7 @@ class SimpleMovingAverageCrossover(AbstractModelIndicator):
             signals['Fast SMA'] > signals['Slow SMA'], 1, 0)
         signals['Signal'] = signals['Difference'].diff()
         signals['Change'] = data['Close'].pct_change()
+        signals.fillna(0, inplace=True)
 
         self.signals = signals
 
@@ -51,7 +52,7 @@ class SimpleMovingAverageCrossover(AbstractModelIndicator):
         Method to get signals from a model.
 
         """
-        if np.all(self.signals, None):
+        if np.all(self.signals == None):
             raise ValueError("The signals haven't been generated yet.")
 
         return self.signals

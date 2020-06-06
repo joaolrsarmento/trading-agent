@@ -7,10 +7,7 @@ import matplotlib.dates as mdates
 from datetime import date
 from tools.AbstractTool import AbstractTool
 from models.Options import Options
-
-BUY = 1.0
-SELL = -1.0
-DO_NOTHING = 0
+from utils.constants import BUY, SELL, DO_NOTHING
 
 class BacktestTool(AbstractTool):
     """
@@ -47,15 +44,34 @@ class BacktestTool(AbstractTool):
         self.final_date = final_date
         self.initial_balance = initial_balance
 
-    def execute_agent(self, agent):
+    def execute_agent(self, agent, save_log=True, plot_signals=False, plot_backtest_data=True):
         """
         Runs the backtest tool.
 
         @param agent: the agent the method should be executed on.
         @@type agent: class Agent
         """
-        data = self._get_data()
+        print(f'Running backtest on agent {agent.get_name()}...')
 
+        data = self.get_data()
+        agent.update(data)
+        signals = agent.get_signals()
+        generated_data = self._generate_backtest_data(signals, data)
+
+        # Plot the data generated (only percentage profit is now been plotted)        
+        if plot_backtest_data:
+            self._plot_backtest_data(agent, generated_data)
+
+        # Plot model signals
+        if plot_signals:
+            agent.plot()
+
+        # Save log file
+        if save_log:
+            data = self._create_backtest_log_data_for_model(agent, generated_data)
+            self.log.log(data)
+
+        
     def execute_model(self, model, save_log=True, plot_signals=False, plot_backtest_data=True):
         """
         Runs the backtest tool.
@@ -68,7 +84,7 @@ class BacktestTool(AbstractTool):
         data = self.get_data()
         model.update(data)
         signals = model.get_signals()
-        generated_data = self._generate_backtest_data(signals)
+        generated_data = self._generate_backtest_data(signals, data)
 
         # Plot the data generated (only percentage profit is now been plotted)        
         if plot_backtest_data:
@@ -95,6 +111,8 @@ class BacktestTool(AbstractTool):
             self.data = pdr.get_data_yahoo(
                 self.symbol, start=self.initial_date, end=self.final_date)
 
+            self.data['Change'] = self.data['Close'].pct_change()
+
             return self.data
 
         elif not initial_date:
@@ -103,7 +121,7 @@ class BacktestTool(AbstractTool):
         else:
             raise ValueError("Final date can't be an empty value.")
     
-    def _create_backtest_log_data_for_model(self, model, generated_data):
+    def _create_backtest_log_data_for_model(self, object_used, generated_data):
         """
         Method to create the data that goes into the log file.
 
@@ -118,7 +136,7 @@ class BacktestTool(AbstractTool):
         # Initialize as empty
         data = {}
         # Get model name and tools parameters
-        data['Model used'] = model.get_name()
+        data['Used on'] = object_used.get_name()
         data['Initial date'] = self.initial_date
         data['Final date'] = self.final_date
         data['Initial balance (R$)'] = self.initial_balance 
@@ -153,7 +171,7 @@ class BacktestTool(AbstractTool):
         plt.xlabel('Date')
         plt.show()
 
-    def _generate_backtest_data(self, signals):
+    def _generate_backtest_data(self, signals, data):
         """
         Method to generate the main data.
 
@@ -167,7 +185,7 @@ class BacktestTool(AbstractTool):
         generated_data = pd.DataFrame(index=signals.index)
         # Calculate the updated values at each index 
         generated_data['Balance'] = (
-            (1 + signals['Signal'] * signals['Change'].shift(1)).cumprod()) * self.initial_balance
+            (1 + signals['Signal'] * data['Change'].shift(1)).cumprod()) * self.initial_balance
         generated_data['Profit'] = (
             generated_data['Balance'] - self.initial_balance)
         generated_data['Profit %'] = (
@@ -175,7 +193,7 @@ class BacktestTool(AbstractTool):
         # Saves the options used
         generated_data['Options'] = signals['Signal']
         # Avoid erros
-        generated_data.fillna(0)
+        generated_data.fillna(0, inplace=True)
         # Format index
         generated_data.index = generated_data.index.strftime("%Y-%m-%d")
 
