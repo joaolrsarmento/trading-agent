@@ -5,7 +5,6 @@ from models.indicators.SimpleMovingAverageCrossover import SimpleMovingAverageCr
 from models.AbstractModel import AbstractModel
 from utils.constants import BUY, SELL, DO_NOTHING
 
-
 class AbstractAgent(object):
     """
     This class represents an abstract agent.
@@ -152,3 +151,4 @@ class AbstractAgent(object):
                               position=position)
         # Save it
         self.operations.append(operation)
+        
