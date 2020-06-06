@@ -1,8 +1,10 @@
 import pandas as pd
 import numpy as np
+from models.Operation import Operation
 from models.indicators.SimpleMovingAverageCrossover import SimpleMovingAverageCrossover
 from models.AbstractModel import AbstractModel
 from utils.constants import BUY, SELL, DO_NOTHING
+
 
 class AbstractAgent(object):
     """
@@ -10,7 +12,7 @@ class AbstractAgent(object):
 
     """
 
-    def __init__(self, agent_name="Abstract Agent"):
+    def __init__(self, agent_name="Abstract Agent", balance=10000, percentage=0.1, take_profit=0.03, stop_loss=0.01):
         """
         Class constructor.
 
@@ -20,6 +22,11 @@ class AbstractAgent(object):
         self.agent_name = agent_name
         self.models = []
         self.signals = pd.DataFrame()
+        self.operations = []
+        self.balance = balance
+        self.active_balance_percentage = percentage
+        self.take_profit = take_profit
+        self.stop_loss = stop_loss
 
     def add_model(self, model):
         """
@@ -34,6 +41,16 @@ class AbstractAgent(object):
         self.signals[model.get_name()] = np.array([])
         # Print
         print(f'Added model {model.get_name()}')
+
+    def _create_operation(self, signals, position):
+
+        operation = Operation(close_price=signals['Close'][-1],
+                              invested_value=self.balance * self.active_balance_percentage,
+                              take_profit=self.take_profit,
+                              stop_loss=self.stop_loss,
+                              position=position)
+
+        self.operations.append(operation)
 
     def update(self, data):
         """
@@ -59,9 +76,12 @@ class AbstractAgent(object):
         for index, row in self.signals.iterrows():
             format_row = np.array(row)
             signals = np.append(signals, BUY if np.all(format_row == BUY)
-                      else SELL if np.all(format_row == SELL) else DO_NOTHING)
+                                else SELL if np.all(format_row == SELL) else DO_NOTHING)
         # Save it
+        self.signals['Close'] = data['Close']
         self.signals['Signal'] = signals
+        # Check for operations update
+        self._update_operations(data)
 
     def run_tool(self, tool, save_log=True, plot_signals=False, plot_tool_data=True):
         """
@@ -85,3 +105,21 @@ class AbstractAgent(object):
 
         """
         return self.signals
+
+    def _should_create_operation(self, signals):
+        if signals['Signal'][-1] in [BUY, SELL]:
+            return True
+
+        return False
+
+    def _update_operations(self, data):
+        # Check for operation creation
+        if self._should_create_operation(self.signals):
+            position = self.signals['Signal'][-1]
+            self._create_operation(self.signals, position)
+
+        # Check for operation closing
+        for operation in self.operations:
+            if operation.is_open_position():
+                if operation.reached_endpoint(data['Close'][-1]):
+                    operation.close()

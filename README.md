@@ -2,7 +2,7 @@
 Models for quantitative trading (including backtest tools and real time agents) using python.
 This project still has no support for windows, just UNIX systems.
 
-- Libs necessary:
+- Required libs:
   - pandas
   - numpy
   - matplotlib
