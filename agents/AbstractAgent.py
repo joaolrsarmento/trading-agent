@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from models.Operation import Operation
+from models.operations.Operation import Operation
 from models.indicators.SimpleMovingAverageCrossover import SimpleMovingAverageCrossover
 from models.AbstractModel import AbstractModel
 from utils.constants import BUY, SELL, DO_NOTHING
