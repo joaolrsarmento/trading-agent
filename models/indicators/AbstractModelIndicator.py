@@ -46,5 +46,7 @@ class AbstractModelIndicator(AbstractModel):
         Method to get signals from a model.
 
         """
-        raise NotImplementedError(
-            "This class is abstract and should not have this method.")
+        if np.all(self.signals == None):
+            raise ValueError("Signals haven't been generated yet.")
+
+        return self.signals

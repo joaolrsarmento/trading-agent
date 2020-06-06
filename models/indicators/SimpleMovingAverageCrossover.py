@@ -45,14 +45,3 @@ class SimpleMovingAverageCrossover(AbstractModelIndicator):
         signals.fillna(0, inplace=True)
 
         self.signals = signals
-
-
-    def get_signals(self):
-        """
-        Method to get signals from a model.
-
-        """
-        if np.all(self.signals == None):
-            raise ValueError("The signals haven't been generated yet.")
-
-        return self.signals

@@ -12,6 +12,7 @@ class BasicAgent(AbstractAgent):
 
         """
         super().__init__('Basic Agent')
+        
         self.create_agent()
 
     def create_agent(self):
