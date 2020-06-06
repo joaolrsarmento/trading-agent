@@ -16,7 +16,12 @@ class BacktestTool(AbstractTool):
     """
     yf.pdr_override()
 
-    def __init__(self, initial_balance=1000.0, symbol='AAPL', initial_date="2019-01-01", final_date="2020-01-01"):
+    def __init__(self, initial_balance=1000.0, 
+                       symbol='AAPL',   
+                       initial_date="2019-01-01", 
+                       final_date="2020-01-01",
+                       take_profit=0.03,
+                       stop_loss=0.01):
         """
         Class constructor.
 
