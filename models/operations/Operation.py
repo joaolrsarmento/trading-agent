@@ -70,30 +70,28 @@ class Operation(object):
         """
         Close operation.
 
-        @return _id: operation id
-        @@@type _id: integer
-        @return _result: operation result
-        @@@type _result: boolean
         @return _profit: operation profit
-        @@@type _profit: operation profit
+        @@@type _profit: float
+        @return history: operation profit
+        @@@type history: dict
         """
         self._closed = True
         self._profit = self.get_profit()
         self._profit_percentage = self.get_profit_in_percentage()
         self._result = True if (self._final_price - self._initial_price) * self._position > 0 else False
         self._final_date = final_date
-        
+
         history = {}
         history['Operation id'] = self._id
-        history['Initial close price (R$)'] = self._initial_price
-        history['Final close price (R$)'] = self._final_price
+        history['Result'] = 'Success' if self._result else 'Fail'
+        history['Entered as'] = 'BUY' if self._position == 1.0 else 'SELL'
         history['Profit (R$)'] = self._profit
         history['Profit (%)'] = f'{self._profit_percentage} %'
+        history['Invested value (R$)'] = self.invested_value
+        history['Initial close price (R$)'] = self._initial_price
+        history['Final close price (R$)'] = self._final_price
         history['Initial date'] = str(self._initial_date)
         history['Final date'] = str(self._final_date)
-        history['Result'] = 'Success' if self._result else 'Fail'
-        history['Entered as'] = self._position
-
         return self._profit, history
 
     def get_final_price(self):

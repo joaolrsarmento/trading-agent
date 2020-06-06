@@ -12,7 +12,7 @@ class AbstractAgent(object):
 
     """
 
-    def __init__(self, agent_name="Abstract Agent", balance=10000, percentage=0.1, take_profit=0.03, stop_loss=0.01):
+    def __init__(self, agent_name="Abstract Agent", balance=10000, percentage=0.01, take_profit=0.03, stop_loss=0.01):
         """
         Class constructor.
 
