@@ -184,8 +184,8 @@ class AbstractAgent(object):
                 # Check for endpoint
                 if operation.reached_endpoint(data['Close'][-1]):
                     # Store operation data
-                    profit, operation_history = operation.close(data.index[-1])
-                    self.balance += profit
+                    invested_value, profit, operation_history = operation.close(data.index[-1])
+                    self.balance += (profit + invested_value)
                     self._add_to_history(operation_history)
 
     def _create_operation(self, signals, position):
@@ -197,7 +197,7 @@ class AbstractAgent(object):
         @param position: position the operation should run on
         @@type position: BUY or SELL constant
         """
-        invested_value = self.balance * self.active_balance_percentage
+        invested_value = round(self.balance * self.active_balance_percentage, 2)
 
         self.balance -= invested_value
         # Create operation

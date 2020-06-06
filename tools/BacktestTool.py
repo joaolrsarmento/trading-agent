@@ -116,8 +116,8 @@ class BacktestTool(AbstractTool):
         data['Initial balance (R$)'] = self.initial_balance
         # Get the last values achieved
         data['Final balance (R$)'] = balance
-        data['Final profit (R$)'] = profit_data[0]
-        data['Final profit (%)'] = profit_data[1]
+        data['Final profit (R$)'] = round(profit_data[0], 2)
+        data['Final profit (%)'] = f'{(profit_data[1] * 100).round(2)} %'
         data['Active operations (#)'] = active_operation_data[0]
         data['Active operations (R$)'] = active_operation_data[1]
         data['Operations history'] = operation_history

@@ -85,14 +85,15 @@ class Operation(object):
         history['Operation id'] = self._id
         history['Result'] = 'Success' if self._result else 'Fail'
         history['Entered as'] = 'BUY' if self._position == 1.0 else 'SELL'
-        history['Profit (R$)'] = self._profit
-        history['Profit (%)'] = f'{self._profit_percentage} %'
+        history['Profit (R$)'] = round(self._profit, 2)
+        history['Profit (%)'] = f'{(self._profit_percentage * 100).round(2)} %'
         history['Invested value (R$)'] = self.invested_value
         history['Initial close price (R$)'] = self._initial_price
         history['Final close price (R$)'] = self._final_price
         history['Initial date'] = str(self._initial_date)
         history['Final date'] = str(self._final_date)
-        return self._profit, history
+        
+        return self.invested_value, self._profit, history
 
     def get_final_price(self):
         """
