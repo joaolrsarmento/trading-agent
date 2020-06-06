@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 from models.indicators.AbstractModelIndicator import AbstractModelIndicator
-from models.Options import Options
 
 
 class SimpleMovingAverageCrossover(AbstractModelIndicator):

@@ -9,7 +9,7 @@ class Operation(object):
 
     """
 
-    def __init__(self, id, close_price, invested_value, take_profit, stop_loss, position):
+    def __init__(self, id, close_price, invested_value, take_profit, stop_loss, position, initial_date):
         """
         Class constructor.
 
@@ -25,6 +25,10 @@ class Operation(object):
         @@type stop_loss: float (is percentage)
         @param position: position the operation should run on
         @@type position: BUY or SELL
+        @param initial_date: initial date
+        @@type initial_date: string
+        @param final_date: final date
+        @@type final_date: string
         """
         self._initial_price = close_price
         self._final_price = close_price
@@ -33,6 +37,8 @@ class Operation(object):
         self._profit = 0
         self._position = position
         self._id = id
+        self._initial_date = initial_date
+        self._final_date = None
 
         self.invested_value = invested_value
         self.take_profit = take_profit
@@ -60,7 +66,7 @@ class Operation(object):
             else:
                 return False
 
-    def close(self):
+    def close(self, final_date):
         """
         Close operation.
 
@@ -73,9 +79,22 @@ class Operation(object):
         """
         self._closed = True
         self._profit = self.get_profit()
+        self._profit_percentage = self.get_profit_in_percentage()
         self._result = True if (self._final_price - self._initial_price) * self._position > 0 else False
+        self._final_date = final_date
+        
+        history = {}
+        history['Operation id'] = self._id
+        history['Initial close price (R$)'] = self._initial_price
+        history['Final close price (R$)'] = self._final_price
+        history['Profit (R$)'] = self._profit
+        history['Profit (%)'] = f'{self._profit_percentage} %'
+        history['Initial date'] = str(self._initial_date)
+        history['Final date'] = str(self._final_date)
+        history['Result'] = 'Success' if self._result else 'Fail'
+        history['Entered as'] = self._position
 
-        return self._id, self._result, self._profit
+        return self._profit, history
 
     def get_final_price(self):
         """
@@ -101,7 +120,26 @@ class Operation(object):
         @@@type: float
         """
         return self.invested_value * self._position * (self._final_price - self._initial_price) / self._initial_price
+    
+    def get_cash_open(self):
+        """
+        Calculates total cash in activity
 
+        @return: total cash
+        @@@type: float
+        """
+        profit_percentage = self.get_profit_in_percentage()        
+        return (1 + profit_percentage) * self.invested_value
+
+    def get_profit_in_percentage(self):
+        """
+        Calculates operation profit
+        
+        @return: operation profit in percentage
+        @@@type: float
+        """
+        return self._position * (self._final_price - self._initial_price) / self._initial_price
+    
     def is_open_position(self):
         """
         Check if it is still open.
