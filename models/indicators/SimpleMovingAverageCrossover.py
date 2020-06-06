@@ -40,6 +40,7 @@ class SimpleMovingAverageCrossover(AbstractModelIndicator):
         signals['Difference'] = np.where(
             signals['Fast SMA'] > signals['Slow SMA'], 1, 0)
         signals['Signal'] = signals['Difference'].diff()
+        signals['Signal'][0:self.slow_factor + 1].replace(0)
         signals['Change'] = data['Close'].pct_change()
         signals.fillna(0, inplace=True)
 

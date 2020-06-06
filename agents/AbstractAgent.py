@@ -12,7 +12,7 @@ class AbstractAgent(object):
 
     """
 
-    def __init__(self, agent_name="Abstract Agent", balance=10000, percentage=0.01, take_profit=0.03, stop_loss=0.01):
+    def __init__(self, agent_name, balance, percentage, take_profit, stop_loss):
         """
         Class constructor.
 
@@ -82,7 +82,12 @@ class AbstractAgent(object):
         @param tool: tool to be executed
         @@type tool: a class derived from tools.AbstractTool class
         """
-        tool.execute_agent(self, save_log)
+        tool.execute_agent(self, 
+                           save_log=save_log, 
+                           balance=self.initial_balance,
+                           percentage=self.active_balance_percentage,
+                           take_profit=self.take_profit, 
+                           stop_loss=self.stop_loss)
 
     def get_name(self):
         """
@@ -96,7 +101,7 @@ class AbstractAgent(object):
         Get agent signals.
 
         """
-        return self.signals
+        return self._signals
 
     def get_profit_data(self):
         """
@@ -121,9 +126,7 @@ class AbstractAgent(object):
         @return profit_data: profit and percentage profit
         @@@type profit_data: tuple
         """
-        profit_data = self.get_profit_data()
-
-        return profit_data, self._history
+        return self._history
 
     def get_active_operation_data(self, updated_close_price):
         """
@@ -137,7 +140,7 @@ class AbstractAgent(object):
                 updated_value_invested = operation.get_cash_open()
                 total_operations_active += 1
                 total_value_invested += updated_value_invested
-        
+
         return total_operations_active, total_value_invested
 
     def get_balance(self):
@@ -148,7 +151,7 @@ class AbstractAgent(object):
         @@@type: float
         """
         return self.balance
-        
+
     def _should_create_operation(self, signals):
         """
         Check if should create a new operation based on last signal.
@@ -163,6 +166,12 @@ class AbstractAgent(object):
 
         return False
 
+    def get_model_signals(self):
+        signals = []
+        for model in self._models:
+            signals.append(model.get_signals())
+
+        return signals
     def _update_operations(self, data):
         """
         Go through all operation to check if any should be closed. Also, check for operation creation
@@ -184,7 +193,8 @@ class AbstractAgent(object):
                 # Check for endpoint
                 if operation.reached_endpoint(data['Close'][-1]):
                     # Store operation data
-                    invested_value, profit, operation_history = operation.close(data.index[-1])
+                    invested_value, profit, operation_history = operation.close(
+                        data.index[-1])
                     self.balance += (profit + invested_value)
                     self._add_to_history(operation_history)
 
@@ -197,7 +207,8 @@ class AbstractAgent(object):
         @param position: position the operation should run on
         @@type position: BUY or SELL constant
         """
-        invested_value = round(self.balance * self.active_balance_percentage, 2)
+        invested_value = round(
+            self.balance * self.active_balance_percentage, 2)
 
         self.balance -= invested_value
         # Create operation
@@ -213,3 +224,7 @@ class AbstractAgent(object):
 
     def _add_to_history(self, operation_history):
         self._history.append(operation_history)
+
+    def plot(self):
+        for model in self._models:
+            model.plot(exclude_columns=['Difference', 'Signal', 'Change'])

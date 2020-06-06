@@ -25,13 +25,13 @@ class Logger(object):
         self._data = None
         self.date = datetime.datetime.now()
 
-    def log(self, data):
+    def log(self, data, custom_name=''):
         """
         Log the data.
         
         """
         self._data = data
-        self._save()
+        self._save(custom_name)
 
     def get_data(self):
         """
@@ -42,11 +42,11 @@ class Logger(object):
         """
         return self._data
 
-    def _save(self):
+    def _save(self, custom_name):
         """
         Save the data stored.
 
         """
         print('Saving log...')
-        with open(os.path.join(self.path, f"log_{'__'.join(str(self.date).split(' '))}.json"), 'w') as f:
+        with open(os.path.join(self.path, f"log_{custom_name}{'__'.join(str(self.date).split(' '))}.json"), 'w') as f:
             json.dump(self._data, f)

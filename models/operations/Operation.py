@@ -60,7 +60,7 @@ class Operation(object):
             else:
                 return False
         else:
-            if updated_price > (1 - self.take_profit) * self._initial_price or updated_price < (1 + self.stop_loss) * self._initial_price:
+            if updated_price < (1 - self.take_profit) * self._initial_price or updated_price > (1 + self.stop_loss) * self._initial_price:
                 self._final_price = updated_price
                 return True
             else:
@@ -92,7 +92,7 @@ class Operation(object):
         history['Final close price (R$)'] = self._final_price
         history['Initial date'] = str(self._initial_date)
         history['Final date'] = str(self._final_date)
-        
+
         return self.invested_value, self._profit, history
 
     def get_final_price(self):
