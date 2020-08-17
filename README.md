@@ -17,3 +17,6 @@ $ git clone https://github.com/joaolrsarmento/trading-agent.git
 $ cd trading-agent
 $ python main.py
 ```
+# Models available for use:
+- Simple double moving average crossover
+- Simple triple moving average crossover
